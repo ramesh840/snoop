@@ -1,0 +1,92 @@
+1. start lab > open google console > login > activate cloud shell.
+
+bq mk lab
+gsutil cp gs://cloud-training/gsp323/lab.csv .
+cat lab.csv
+gsutil cp gs://cloud-training/gsp323/lab.schema .
+cat lab.schema
+
+search > buckets > cloud storage 
+create bucket > Name bucket (copy paste from qwiklab) > 
+		choose how to control access to object > check enforce > check fine grained
+		create
+
+search > big query 
+
+explorer (qwiklabs -- click on 3 dots ) > create dataset > copy dataset_id from qwiklabs > create dataset
+lab_978 -- click on 3 dots > create table > google gloud storage > select csv file from qwiklabs (cloud-training/gsp323/lab.csv)
+					  > Table - customers > edit as text > (copy from terminal big query schema)>
+					  > create table > wait and cancel.
+
+
+
+Task 1 
+
+search > jobs (dataflow) 
+
+create > (name) job-customers > (template) Text Files on Cloud Storage to BigQuery (batch) > copy paste all required parameters >
+       > run job
+
+task 2
+
+search > dataproc
+
+create cluster > select region > create.
+
+(click on created cluster) > vm instances > ssh > (copy paste from qwiklabs) - hdfs dfs -cp gs://cloud-training/gsp323/data.txt /data.txt
+
+jobs > submit a job > region > (create cluster) > spark > ( copy paste all from qwiklabs ) > submit
+
+
+Task 3
+
+search > dataprep 
+
+import data > cloud storage 
+
+(click on cloud storage edit icon) > copy paste csv file from qwiklab > continue 
+
+runs.csv > use in new flow > 
+
+column 10 > (right click on) failure > delete row with .. > column 9 > filter rows > on column values > contains > copy paste regex.
+
+change all the column values > run
+
+
+Task 4
+
+(in command prompt) 
+
+export GOOGLE_CLOUD_PROJECT=$(gcloud config get-value core/project)
+
+gcloud iam service-accounts create my-natlang-sa \
+  --display-name "my natural language service account"
+
+gcloud iam service-accounts keys create ~/key.json \
+  --iam-account my-natlang-sa@${GOOGLE_CLOUD_PROJECT}.iam.gserviceaccount.com
+
+export GOOGLE_APPLICATION_CREDENTIALS="/home/USER/key.json"
+
+gcloud ml language analyze-entities --content="Old Norse texts portray Odin as one-eyed and long-bearded, frequently wielding a 
+spear named Gungnir and wearing a cloak and a broad hat." > result.json
+
+gsutil cp result.json (gs://qwiklabs-gcp-00-ad1f02baa62b-marking/task4-cnl-657.result) -- copy paste from qwiklab
+
+
+alternative method (dont do this, only nerds do )
+
+{
+  "config": {
+      "encoding":"FLAC",
+      "languageCode": "en-US"
+  },
+  "audio": {
+      "uri":"gs://cloud-training/gsp323/task4.flac"
+  }
+}
+
+curl -s -X POST -H "Content-Type: application/json" --data-binary @request.json \
+"https://speech.googleapis.com/v1/speech:recognize?key=${API_KEY}" > result1.json
+
+
+
